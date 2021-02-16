@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>ProMan</title>
+        <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='favicon/favicon-96x96.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
+        <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=AAQQwcYsVq6D22mTixdeW3Y_uy2O5I6IRcwtUc7rd4FDaJAzJZSzLzuXslDPbJIk4DMqx9GgpGRb92_CI_7a6wcusWRuzbYGyo2q83z_hkdWvoW2kqCNGuaQjUS8m5thoUE7LJ3kw1tosO0zdQ65Pw" charset="UTF-8"></script><script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+        <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    </head>
+    <body>
+    <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+        <a class="navbar-brand" href="#">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Android_P_logo.png/450px-Android_P_logo.png" style="height: 30px">
+            ProMan
+        </a>
+        <form class="form-inline">
+        {% if session['logged_in'] %}
+            <p class="board-title"><small>Logged in as: <strong>{{ session['username'] }}</strong></small></p>
+            <br>
+
+            <a href="/logout"> <button class="btn btn-sm btn-outline-secondary" type="button" >Logout</button></a>
+
+           {% else %}
+            <p class="board-title"><small>Not logged in</small></p>
+            <button class="btn btn-outline-success" type="button" data-toggle="modal" data-target="#modalLoginForm" style="margin: 4px;">Login</button>
+            <button class="btn btn-outline-success" type="button" data-toggle="modal" data-target="#modalRegisterForm">Register</button>
+            {% endif %}
+        </form>
+    </nav>
+        <div class="container"><br>
+{#            <h1>ProMan</h1>#}
+            {% if session['logged_in'] %}
+                <h3>{{ session['username'] }}'s Private Boards</h3>
+                {% else %}
+                <h3>Public Boards</h3>
+            {% endif %}
+            <br><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addBoardModal">
+                Add Board
+
+            </button>
+            <br><br>
+            <div id="accordion"></div><br>
+        </div>
+        <!-- Add Board Modal -->
+        <div class="modal fade" id="addBoardModal" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content" style="width: 500px">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterTitle">Add Board</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="add-board" class="row" style="padding: 5px">
+                            <form action="/add-board" method="POST">
+                                <label for="new-board-name">Name for new board: </label>
+                                <input type="text" maxlength="20" name="new-board-name" id="new-board-name">
+                                <button type="submit" class="btn btn-success">Add New Board</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+{#                        <button type="button" class="btn btn-primary">Save changes</button>#}
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- Login Modal -->
+        <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body mx-3">
+                        <form id="login-form">
+                            <label for="username">Username:</label>
+                            <input name="username" type="text" id="username"><br>
+                            <label for="password">Password:</label>
+                            <input type="password" name="password" id="password"><br>
+                            <button onclick="login()" type="button" class="btn btn-info">Login</button>
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="modalRegisterForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabelR"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h4 class="modal-title w-100 font-weight-bold">Register</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body mx-3">
+                        <form id="register-form" >
+                            <label for="usernameR">Username:</label>
+                            <input name="usernameR" type="text" id="usernameR"><br>
+                            <label for="passwordR">Password:</label>
+                            <input type="password" name="passwordR" id="passwordR"><br>
+                            <button onclick="register()" type="button" class="btn btn-info">Register</button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    <footer class="footer">
+
+      <!-- Copyright -->
+      <div class="footer-copyright text-center py-3">© 2020 Copyright:
+        <a href="/">Team Bad Boyz @ Codecool</a>
+      </div>
+      <!-- Copyright -->
+
+    </footer>
+    <!-- Footer -->
+    <script src="https://kit.fontawesome.com/5778b31b41.js" ></script>
+    </body>
+
+
+</html>
